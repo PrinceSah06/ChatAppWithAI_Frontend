@@ -14,6 +14,7 @@ import { getWebContainer } from "../config/webContainer";
 // import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css'; // or another style you like
 import ChatArea from "./ChatArea";
+import { useChat } from "../hooks/useChat";
 
 
 
@@ -39,12 +40,10 @@ const Project = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(new Set()); // Initialized as Set
   const [project, setProject] = useState(location.state?.project || null);
-  const [message, setMessage] = useState("");
   const { user } = useContext(UserContext);
   const messageBox = React.createRef();
 
   const [users, setUsers] = useState([]);
-  const [messages, setMessages] = useState([]); // New state variable for messages
   const [fileTree, setFileTree] = useState({});
 
   const [currentFile, setCurrentFile] = useState(null);
@@ -54,6 +53,10 @@ const Project = () => {
   const [iframeUrl, setIframeUrl] = useState(null);
 
   const [runProcess, setRunProcess] = useState(null);
+
+
+ const {message,messages,setMessage,setMessages,send} = useChat(project._id,user,WriteAiMessage) 
+
 console.log(JSON.stringify(user));
 
 
@@ -87,21 +90,7 @@ console.log(JSON.stringify(user));
       });
   }
 
-  const send = () => {
-      if (!message.trim()) return;
 
-      const outgoing = {
-        message,
-        sender:{
-        _id:user._id,
-        email:user.email,
-      }};
-
-      setMessages((pre)=>[...pre,outgoing])
-    sendMessage("project-message", {message});
-    // setMessages((prevMessages) => [...prevMessages, { sender: user, message }]); // Update messages state
-    setMessage("");
-  };
   //5.43.08
   function WriteAiMessage(message) {
     const messageObject = JSON.parse(message);
@@ -119,6 +108,22 @@ console.log(JSON.stringify(user));
       </div>
     );
   }
+
+  function saveFileTree(ft) {
+    axios
+      .put("/projects/update-file-tree", {
+
+        projectId: project._id,
+        fileTree: ft,
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  
 
   useEffect(() => {
     // If there's no project provided via location state, redirect back to home
@@ -180,20 +185,7 @@ const handler= (data) => {
 
   }, [ navigate,webContainer,project?._id]);
 
-  function saveFileTree(ft) {
-    axios
-      .put("/projects/update-file-tree", {
 
-        projectId: project._id,
-        fileTree: ft,
-      })
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
 
   // Removed appendIncomingMessage and appendOutgoingMessage functions
 

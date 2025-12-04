@@ -3,19 +3,28 @@ import {  useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from '../config/axios.js';
 import {UserContext} from '../context/user.context.jsx'
+import useAuthentication from '../hooks/useValidation.jsx';
+import InputButton from './InputButton.jsx';
 function Login() {
   const [ email , setEmail ] = useState('');
   const [ password , setPassword ] = useState('');
 
   const { setUser } = useContext(UserContext)
 
+  const{ errors,setErrors,validatInput} = useAuthentication()
+
 
 const navigate = useNavigate()
 
 
 function submitHandler(e){
+  console.log('inside login submit hendlerfunction')
   e.preventDefault()
-   
+  let isValid = validatInput({email,password});
+   console.log("isValid", isValid, "errors", errors);
+
+   if(!isValid){return;}
+
   axios.post('/user/login',{
     email,password
   }).then((res)=>{
@@ -26,7 +35,8 @@ function submitHandler(e){
 
     navigate('/' )
   }).catch((err) => {
-  console.log('error :', err?.response?.data);
+  console.log('error :', err?.response?.data.err);
+  setErrors(prev =>({...prev,api:err.response.data.err}))
   // optionally show message:
   // alert(err?.response?.data?.message || 'Login failed');
 });
@@ -35,34 +45,40 @@ function submitHandler(e){
 
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-gray-900'>
-      <div className="bg-gray-800 p-8 rounded-lg shadowo-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-white mb-6">Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
+      <div className="w-full max-w-md px-4">
+        <div className="bg-slate-900/80 border border-slate-700/60 backdrop-blur-md shadow-2xl rounded-2xl px-8 py-10">
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">
+            Login
+          </h2>
+                 {errors.api && (
+  <p className="text-red-400 text-sm mb-3">
+    {typeof errors.api === "string" ? errors.api : "Registration failed"}
+  </p>
+)}
         <form 
         onSubmit={submitHandler}
         >
           <div className="mb-4">
-            <label className="block text-gray-400 mb-2 " htmlFor='email'>Email
+                <InputButton
+            label="Email"
+            id="email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            placeholder="Enter your email"
+            error={errors.email}
+          />
 
-            </label>
-            <input onChange={(e)=> setEmail(e.target.value)}
-            type='email'
-            id='email'
-            placeholder='Enter your emial'
-            className='w-full p-3 rounded bg-gary-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
-            </input>
-          </div>
-             <div className="mb-4">
-            <label className="block text-gray-400 mb-2 " htmlFor='password'>Email
-
-            </label>
-            <input onChange={(e)=> setPassword(e.target.value)}
-            type='password'
-            id='password'
-            placeholder='Enter your password'
-            className='w-full p-3 rounded bg-gary-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
-            </input>
-          </div>
+          <InputButton
+            label="Password"
+            id="password"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="Enter your password"
+            error={errors.password}
+          /></div>
           <button
            type='submit'
           
@@ -76,6 +92,7 @@ function submitHandler(e){
                 </p>
       </div>
       
+    </div>
     </div>
   )
 }
