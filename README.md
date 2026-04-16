@@ -1,17 +1,36 @@
-# React + Vite
+﻿# ChatAppWithAI_Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ChatAppWithAI Frontend project focused on Chat with a stack that includes Chat, React, Socket.IO, Tailwind CSS.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Chat
+- React
+- Socket.IO
+- Tailwind CSS
+- TypeScript
+- Vite
+- WebContainers
 
-## React Compiler
+## Project Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `public/`
+- `src/`
 
-## Expanding the ESLint configuration
+## Packages And Scripts
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# ChatAppWithAI_Frontend
+- `frontend` at `ChatAppWithAI_Frontend`
+  Available scripts: build, dev, lint, preview.
+
+## Getting Started
+
+1. Install dependencies in the package you want to run.
+2. Create a local `.env` from any generated `.env.example` file.
+3. Run the main development script for that package.
+
+## Maintenance Notes
+
+- Generated folders such as `node_modules/`, `dist/`, and `.next/` should stay untracked.
+- Secrets should stay in local `.env` files and never be committed.
+- Update this README when the project purpose or setup changes.
+
