@@ -10,6 +10,10 @@ export function useChat(projectId,user,OnAimessage){
 
         const send = () => {
       if (!message.trim()) return;
+      if (!user) {
+        console.warn("User is null. Cannot send message.");
+        return;
+      }
 
       const outgoing = {
         message,

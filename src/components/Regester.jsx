@@ -1,95 +1,98 @@
-import React, { useState, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { UserContext } from "../context/user.context";
-import axios from "../config/axios";
-import InputButton from "./InputButton";
-import useAuthentication from "../hooks/useValidation";
+import React, { useContext, useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom';
+import axios from '../config/axios.js';
+import { UserContext } from '../context/user.context.jsx'
+import useAuthentication from '../hooks/useValidation.jsx';
+import InputButton from './InputButton.jsx';
 
-const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+function Regester() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { setUser } = useContext(UserContext)
+  const { errors, setErrors, validatInput } = useAuthentication()
+  const navigate = useNavigate()
 
-  const { setUser } = useContext(UserContext);
-
-  const navigate = useNavigate();
-const { errors,setErrors,validatInput } = useAuthentication()
   function submitHandler(e) {
-    e.preventDefault();
-const isValid = validatInput({email,password})
+    e.preventDefault()
+    let isValid = validatInput({ email, password });
+    if (!isValid) { return; }
 
-if(!isValid){
-  return;
-}
-    axios
-      .post("/user/register", {
-        email,
-        password,
-      })
-      .then((res) => {
-        console.log("this is response while register user", res);
-        console.log(res.data);
-        localStorage.setItem("token", res.data.token);
-        setUser(res.data.user);
-        navigate("/");
-      })
-      .catch((err) => {
-        setErrors(prev =>({...prev,api:err.response.data}))
-        console.log(err.response.data.err);
-        console.log('whole error obj :' ,err)
-      });
+    axios.post('/user/register', {
+      email, password
+    }).then((res) => {
+      localStorage.setItem('token', res.data.token)
+      setUser(res.data.user)
+      navigate('/')
+    }).catch((err) => {
+      setErrors(prev => ({ ...prev, api: err.response?.data?.err || 'Registration failed' }))
+    });
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
-      <div className="w-full max-w-md px-4">
-        <div className="bg-slate-900/80 border border-slate-700/60 backdrop-blur-md shadow-2xl rounded-2xl px-8 py-10">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">
-            Login
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]">
+      <div className="w-full max-w-md px-4 relative z-10">
+        <div className="bg-slate-900/60 border border-slate-800 backdrop-blur-xl shadow-2xl rounded-3xl px-8 py-10 transform transition-all duration-500">
+
+          <div className="flex justify-center mb-6">
+            <div className="w-16 h-16 bg-indigo-500/20 rounded-2xl flex items-center justify-center border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+              <i className="ri-user-add-fill text-3xl text-indigo-400"></i>
+            </div>
+          </div>
+
+          <h2 className="text-3xl font-extrabold text-white mb-2 text-center tracking-tight">
+            Create Account
           </h2>
-        {errors.api && (
-  <p className="text-red-400 text-sm mb-3">
-    {typeof errors.api === "string" ? errors.api : "Registration failed"}
-  </p>
-)}
-        <form onSubmit={submitHandler}>
-          <InputButton
-            label="Email"
-            id="email"
-            type="email"
-            value={email}
-            onChange={setEmail}
-            placeholder="Enter your email"
-            error={errors.email}
-          />
+          <p className="text-slate-400 text-center mb-8 text-sm">Join the AI Workspace and start building</p>
 
-          <InputButton
-            label="Password"
-            id="password"
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="Enter your password"
-            error={errors.password}
-          />
+          {errors.api && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-6 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+              <i className="ri-error-warning-fill text-red-400"></i>
+              <p className="text-red-400 text-sm">
+                {typeof errors.api === "string" ? errors.api : "Registration failed"}
+              </p>
+            </div>
+          )}
 
-          <button
-            type="submit"
-         className="w-full inline-flex justify-center items-center gap-2 rounded-lg bg-blue-500 px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition"
-          >
-            Register
-          </button>
-        </form>
-     
-  <p className="mt-6 text-center text-sm text-slate-400">
-    Already have an account?{" "}
-    <Link to="/login" className="font-medium text-blue-400 hover:text-blue-300">
-      Login
-    </Link>
-  </p>
+          <form onSubmit={submitHandler} className="space-y-5">
+            <InputButton
+              label="Email Address"
+              id="email"
+              type="email"
+              value={email}
+              onChange={setEmail}
+              placeholder="name@example.com"
+              error={errors.email}
+            />
+
+            <InputButton
+              label="Password"
+              id="password"
+              type="password"
+              value={password}
+              onChange={setPassword}
+              placeholder="••••••••"
+              error={errors.password}
+            />
+
+            <button
+              type='submit'
+              className='w-full p-3.5 mt-2 rounded-xl bg-indigo-600 font-semibold text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-500 hover:shadow-indigo-500/50 transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900' >
+              Sign Up
+            </button>
+          </form>
+
+          <p className="text-slate-400 mt-8 text-center text-sm">
+            Already have an account? {' '}
+            <Link to="/login" className="text-indigo-400 font-medium hover:text-indigo-300 transition-colors">Sign in</Link>
+          </p>
+        </div>
       </div>
-    </div>
-    </div>
-  );
-};
 
-export default Register;
+      {/* Decorative background elements */}
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+    </div>
+  )
+}
+
+export default Regester;
